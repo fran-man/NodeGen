@@ -6,6 +6,14 @@ Server.get(/\/generate/,function(req,res){
 	
 	/* Pull parameters out of URL */
 	var dataType = req.query['format'];
+	var numberOfVals = 5;
+	if(isNaN(parseInt(req.query['length']))){
+		/* Do nothing */
+	}
+	else{
+		numberOfVals = parseInt(req.query['length']);
+	}
+	
 	dataType = dataType.toUpperCase();
 	
 	/* Currently only works for JSON,
@@ -17,9 +25,31 @@ Server.get(/\/generate/,function(req,res){
 	}
 	else{
 		res.header('Content-Type','text/plain');
-		res.send('Format:' + dataType);
+		result = "{"; /* Start of JSON */
+		
+		for(i = 0; i < numberOfVals; i++){
+			result += '"value'+i+'":"'+randStr(8)+'",';
+		}
+		
+		/* Trim last comma... */
+		result = result.substring(0,result.length - 1) + "}";
+		
+		res.send(result);
 	}
 });
+
+function randStr(length){
+	if(!isNaN(length)){
+		var chars = "abcdef1234567890";
+		var rtn = "";
+		for(var i = 0; i < length; i++){
+			nextChar = chars.charAt(Math.floor(Math.random()*16));
+			rtn += nextChar;
+		}
+		
+		return rtn;
+	}
+}
 
 Server.listen('9999');
 
